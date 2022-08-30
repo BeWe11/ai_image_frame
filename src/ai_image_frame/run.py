@@ -1,6 +1,7 @@
 import os
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Union
 
 from dalle2 import Dalle2
 from dotenv import load_dotenv
@@ -27,6 +28,8 @@ INKY_DIMENSIONS = Dimensions(width=600, height=448)
 DALLE_DIMENSIONS = Dimensions(width=1024, height=1024)
 SOLID_BLACK_COLOR_TUPLE = (0, 0, 0, 255)
 SATURATION = 0.5
+CHOSEN_IMAGE_LOG_NAME = "chosen_images.log"
+GENERATED_IMAGE_LOG_NAME = "generated_images.log"
 
 # Gpio pins for each button (from left to right, reverse alphabetical order)
 BUTTON_PINS = [24, 16, 6, 5]
@@ -49,10 +52,10 @@ def split_long_text(text: str, max_line_length: int) -> list[str]:
 def generate_images_for_prompt(prompt: str) -> list[Path]:
     # file_paths = dalle.generate_and_download(prompt, IMAGE_DIR)
     file_paths = [
-        "images/generation-1a3d0cCM7s9fHGrBLm7KAp32.png",
-        "images/generation-kVLiU7oNyr2x6d8YADm4xXP7.png",
-        "images/generation-F3Aw2dDQWa4ugSftT7fntUNl.png",
-        "images/generation-WO2TsfewLPhCEhZQzEC4KAka.png",
+        "images/generation-nkkmR7oHwVLFVBjDAzF0LQzn.png",
+        "images/generation-npDqQCEtvXG0L5lM5jfPkmXZ.png",
+        "images/generation-Or0d74d5Ry8ltvbliUgkJOZb.png",
+        "images/generation-Z4Uqw7G5JtPJCskogQibFuub.png",
     ]
     return [Path(path_string) for path_string in file_paths]
 
@@ -183,7 +186,8 @@ def generate_display_image(image: Image.Image, text: str) -> Image.Image:
 
 
 def enrich_prompt(prompt: str) -> str:
-    return prompt + ", in the style of van gogh"
+    # return prompt + ", in the style of van gogh"
+    return prompt + ", in the style of thomas kinkade"
 
 
 def show_image(image: Image.Image) -> None:
@@ -205,45 +209,109 @@ def init_gpio() -> None:
     GPIO.setup(BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
+def append_to_chosen_image_log(image_path: Path, prompt: str) -> None:
+    with open(CHOSEN_IMAGE_LOG_NAME, "a") as f:
+        f.write(f"{image_path},{prompt}\n")
+
+
+def append_to_generated_image_log(image_paths: list[Path], prompt: str) -> None:
+    with open(GENERATED_IMAGE_LOG_NAME, "a") as f:
+        for image_path in image_paths:
+            f.write(f"{image_path},{prompt}\n")
+
+
+def get_button_index(message: str) -> int:
+    chosen_label = None
+    if RUN_MODE == "mac":
+        while chosen_label is None:
+            candidate_label = input(message)
+            if candidate_label in BUTTON_LABELS:
+                chosen_label = candidate_label
+    elif RUN_MODE == "pi":
+        import RPi.GPIO as GPIO
+
+        print(message)
+        while chosen_label is None:
+            if GPIO.input(BUTTON_PINS[0]) == GPIO.LOW:
+                chosen_label = BUTTON_LABELS[0]
+            elif GPIO.input(BUTTON_PINS[1]) == GPIO.LOW:
+                chosen_label = BUTTON_LABELS[1]
+            elif GPIO.input(BUTTON_PINS[2]) == GPIO.LOW:
+                chosen_label = BUTTON_LABELS[2]
+            elif GPIO.input(BUTTON_PINS[3]) == GPIO.LOW:
+                chosen_label = BUTTON_LABELS[3]
+    return BUTTON_LABELS.index(chosen_label)
+
+
+def show_collage(image_paths: list[Path], prompt: Union[str, list[str]]) -> None:
+    images = [Image.open(image_path) for image_path in image_paths]
+
+    collage_image = generate_collage_image(images)
+    show_image(collage_image)
+
+    button_index = get_button_index(
+        f"Please choose one image to display ({', '.join(BUTTON_LABELS[:-1])} or {BUTTON_LABELS[-1]}): "
+    )
+
+    chosen_image = images[button_index]
+    if isinstance(prompt, list):
+        prompt = prompt[button_index]
+    append_to_chosen_image_log(image_paths[button_index], prompt)
+    display_image = generate_display_image(chosen_image, prompt)
+
+    show_image(display_image)
+
+
+def remove_duplicates(l: list[Any]) -> list[Any]:
+    """Keep last occurences of elements."""
+    return list(reversed(list(dict.fromkeys(reversed(l)))))
+
+
+def handle_new_prompt() -> None:
+    prompt = input("Please enter a prompt: ")
+    image_paths = generate_images_for_prompt(enrich_prompt(prompt))
+    append_to_generated_image_log(image_paths, prompt)
+    show_collage(image_paths, prompt)
+
+
+def handle_last_prompt() -> None:
+    with open(GENERATED_IMAGE_LOG_NAME, "a+") as f:
+        f.seek(0)
+        lines = list(f)
+    prompt = (lines[-1].split(",")[1]).strip()
+    image_paths = [Path(line.split(",")[0]) for line in lines]
+    show_collage(image_paths, prompt)
+
+
+def handle_previous_choices() -> None:
+    with open(CHOSEN_IMAGE_LOG_NAME, "a+") as f:
+        f.seek(0)
+        lines = list(f)
+    prompts = [line.split(",")[1] for line in lines]
+    image_paths = [Path(line.split(",")[0]) for line in lines]
+    last_images_paths = remove_duplicates(image_paths)[: len(BUTTON_LABELS)]
+    show_collage(last_images_paths, prompts[-1].strip())  # FIXME
+
+
 def run_main_loop() -> None:
     if RUN_MODE == "pi":
         init_gpio()
 
     while True:
-        prompt = input("Please enter a prompt: ")
+        button_index = get_button_index(
+            """Please choose an action:
 
-        image_paths = generate_images_for_prompt(enrich_prompt(prompt))
-        images = [Image.open(image_path) for image_path in image_paths]
-
-        collage_image = generate_collage_image(images)
-        show_image(collage_image)
-
-        chosen_label = None
-        while chosen_label is None:
-            if RUN_MODE == "mac":
-                candidate_image = input(
-                    f"Please choose one image to display ({', '.join(BUTTON_LABELS[:-1])} or {BUTTON_LABELS[-1]}): "
-                )
-                if candidate_image in BUTTON_LABELS:
-                    chosen_label = candidate_image
-            elif RUN_MODE == "pi":
-                import RPi.GPIO as GPIO
-
-                print("Please choose one image to display (A, B, C or D): ")
-                while chosen_label is None:
-                    if GPIO.input(BUTTON_PINS[0]) == GPIO.LOW:
-                        chosen_label = BUTTON_LABELS[0]
-                    elif GPIO.input(BUTTON_PINS[1]) == GPIO.LOW:
-                        chosen_label = BUTTON_LABELS[1]
-                    elif GPIO.input(BUTTON_PINS[2]) == GPIO.LOW:
-                        chosen_label = BUTTON_LABELS[2]
-                    elif GPIO.input(BUTTON_PINS[3]) == GPIO.LOW:
-                        chosen_label = BUTTON_LABELS[3]
-
-        chosen_image = images[BUTTON_LABELS.index(chosen_label)]
-        display_image = generate_display_image(chosen_image, prompt)
-
-        show_image(display_image)
+A: Generate an image for a new prompt.
+B: Choose again for the last prompt.
+C: Choose from last the four previous choices.
+"""
+        )
+        if button_index == 0:
+            handle_new_prompt()
+        elif button_index == 1:
+            handle_last_prompt()
+        elif button_index == 2:
+            handle_previous_choices()
 
 
 if __name__ == "__main__":

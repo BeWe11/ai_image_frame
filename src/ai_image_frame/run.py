@@ -282,7 +282,7 @@ def handle_last_prompt() -> None:
         f.seek(0)
         lines = list(f)
     prompt = (lines[-1].split(",")[1]).strip()
-    image_paths = [Path(line.split(",")[0]) for line in lines]
+    image_paths = [Path(line.split(",")[0]) for line in lines][-len(BUTTON_LABELS) :]
     show_collage(image_paths, prompt)
 
 

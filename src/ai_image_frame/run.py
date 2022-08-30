@@ -299,6 +299,7 @@ def handle_previous_choices() -> None:
 def handle_clear() -> None:
     if RUN_MODE == "pi":
         from inky import Inky7Colour as Inky
+
         inky = Inky()
         for y in range(inky.height - 1):
             for x in range(inky.width - 1):
@@ -318,7 +319,7 @@ def run_main_loop() -> None:
 
 A: Generate an image for a new prompt.
 B: Choose again for the last prompt.
-C: Choose from last the four previous choices.
+C: Choose from the last four previous choices.
 D: Clear the display.
 """
         )

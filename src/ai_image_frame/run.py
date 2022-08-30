@@ -34,6 +34,7 @@ GENERATED_IMAGE_LOG_NAME = "generated_images.log"
 # Gpio pins for each button (from left to right, reverse alphabetical order)
 BUTTON_PINS = [24, 16, 6, 5]
 BUTTON_LABELS = ["A", "B", "C", "D"]
+DEMO_MODE = True
 
 
 def get_font(font_size) -> ImageFont.ImageFont:
@@ -50,13 +51,15 @@ def split_long_text(text: str, max_line_length: int) -> list[str]:
 
 
 def generate_images_for_prompt(prompt: str) -> list[Path]:
-    # file_paths = dalle.generate_and_download(prompt, IMAGE_DIR)
-    file_paths = [
-        "images/generation-nkkmR7oHwVLFVBjDAzF0LQzn.png",
-        "images/generation-npDqQCEtvXG0L5lM5jfPkmXZ.png",
-        "images/generation-Or0d74d5Ry8ltvbliUgkJOZb.png",
-        "images/generation-Z4Uqw7G5JtPJCskogQibFuub.png",
-    ]
+    if DEMO_MODE:
+        file_paths = [
+            "images/generation-nkkmR7oHwVLFVBjDAzF0LQzn.png",
+            "images/generation-npDqQCEtvXG0L5lM5jfPkmXZ.png",
+            "images/generation-Or0d74d5Ry8ltvbliUgkJOZb.png",
+            "images/generation-Z4Uqw7G5JtPJCskogQibFuub.png",
+        ]
+    else:
+        file_paths = dalle.generate_and_download(prompt, IMAGE_DIR)
     return [Path(path_string) for path_string in file_paths]
 
 

@@ -296,6 +296,18 @@ def handle_previous_choices() -> None:
     show_collage(last_images_paths, prompts[-1].strip())  # FIXME
 
 
+def handle_clear() -> None:
+    if RUN_MODE == "pi":
+        from inky import Inky7Colour as Inky
+        inky = Inky()
+        for y in range(inky.height - 1):
+            for x in range(inky.width - 1):
+                inky.set_pixel(x, y, Inky.CLEAN)
+        inky.show()
+    elif RUN_MODE == "mac":
+        pass
+
+
 def run_main_loop() -> None:
     if RUN_MODE == "pi":
         init_gpio()
@@ -307,6 +319,7 @@ def run_main_loop() -> None:
 A: Generate an image for a new prompt.
 B: Choose again for the last prompt.
 C: Choose from last the four previous choices.
+D: Clear the display.
 """
         )
         if button_index == 0:
@@ -315,6 +328,8 @@ C: Choose from last the four previous choices.
             handle_last_prompt()
         elif button_index == 2:
             handle_previous_choices()
+        elif button_index == 3:
+            handle_clear()
 
 
 if __name__ == "__main__":

@@ -17,7 +17,31 @@ black = "^22.6.0"
 isort = "^5.10.1"
 flake8 = "^5.0.4"
 ipdb = "^0.13.9"
+mypy = "^0.971"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+run_image_frame_loop = 'ai_image_frame.run:run_main_loop'
+
+[tool.mypy]
+python_version = "3.9"
+strict = true
+
+[[tool.mypy.overrides]]
+module = "dalle2" 
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "dotenv" 
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "inky" 
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "PIL" 
+ignore_missing_imports = true

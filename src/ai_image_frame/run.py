@@ -2,18 +2,16 @@ import os
 from pathlib import Path
 from typing import Any, Union
 
-from dalle2 import Dalle2
 from dotenv import load_dotenv
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 
-from ai_image_frame.services import image_manipulation_service
+from ai_image_frame.services import image_generation_service, image_manipulation_service
 
 load_dotenv()
 SESSION_TOKEN = os.getenv("DALLE2_SESSION_TOKEN")
 RUN_MODE = os.getenv("RUN_MODE")
 
 
-dalle = Dalle2(f"sess-{SESSION_TOKEN}")
 CHOSEN_IMAGE_LOG_NAME = "chosen_images.log"
 GENERATED_IMAGE_LOG_NAME = "generated_images.log"
 
@@ -26,24 +24,6 @@ SATURATION = 0.5
 DALLE_DIMENSIONS = image_manipulation_service.Dimensions(width=1024, height=1024)
 # INKY_DIMENSIONS = image_manipulation_service.Dimensions(width=600, height=448)
 INKY_DIMENSIONS = image_manipulation_service.Dimensions(width=448, height=600)
-
-
-def generate_images_for_prompt(prompt: str) -> list[Path]:
-    if DEMO_MODE:
-        file_paths = [
-            "images/generation-nkkmR7oHwVLFVBjDAzF0LQzn.png",
-            "images/generation-npDqQCEtvXG0L5lM5jfPkmXZ.png",
-            "images/generation-Or0d74d5Ry8ltvbliUgkJOZb.png",
-            "images/generation-Z4Uqw7G5JtPJCskogQibFuub.png",
-        ]
-    else:
-        file_paths = dalle.generate_and_download(prompt, IMAGE_DIR)
-    return [Path(path_string) for path_string in file_paths]
-
-
-def enrich_prompt(prompt: str) -> str:
-    # return prompt + ", in the style of van gogh"
-    return prompt + ", in the style of thomas kinkade"
 
 
 def show_image(image: Image.Image) -> None:
@@ -129,7 +109,9 @@ def remove_duplicates(input_list: list[Any]) -> list[Any]:
 
 def handle_new_prompt() -> None:
     prompt = input("Please enter a prompt: ")
-    image_paths = generate_images_for_prompt(enrich_prompt(prompt))
+    image_paths = image_generation_service.generate_images_for_prompt(
+        prompt, IMAGE_DIR, SESSION_TOKEN, demo_mode=DEMO_MODE
+    )
     append_to_generated_image_log(image_paths, prompt)
     show_collage(image_paths, prompt)
 

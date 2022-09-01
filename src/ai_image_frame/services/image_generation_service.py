@@ -14,7 +14,7 @@ def _enrich_prompt(prompt: str) -> str:
 
 
 def generate_images_for_prompt(
-    prompt: str, image_dir: str, session_token: str, demo_mode: bool = False
+    prompt: str, image_dir: Path, session_token: str, demo_mode: bool = False
 ) -> list[Path]:
     if demo_mode:
         file_paths = [

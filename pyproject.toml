@@ -10,6 +10,8 @@ dalle2 = "^1.0.9"
 python-dotenv = "^0.20.0"
 requests = "^2.28.1"
 Pillow = "^9.2.0"
+pvcheetah = "^1.1.1"
+pvrecorder = "^1.1.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

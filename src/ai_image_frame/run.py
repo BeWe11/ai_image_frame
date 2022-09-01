@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+
+load_dotenv()
 from PIL import Image
 
 from ai_image_frame.services import (
@@ -9,9 +11,9 @@ from ai_image_frame.services import (
     image_manipulation_service,
     inky_service,
     logging_service,
+    voice_service,
 )
 
-load_dotenv()
 SESSION_TOKEN = os.environ["DALLE2_SESSION_TOKEN"]
 RUN_MODE = os.environ["RUN_MODE"]
 LOG_DIR = Path(os.environ["LOG_DIR"])
@@ -78,8 +80,16 @@ def show_collage(image_paths: list[Path], prompts: list[str]) -> None:
     show_image(display_image)
 
 
+def get_prompt_cli() -> str:
+    prompt = voice_service.get_voice_input()
+    print(f"{prompt = }")
+    # prompt = input("Please enter a prompt: ")
+    return prompt
+
+
 def handle_new_prompt() -> None:
-    prompt = input("Please enter a prompt: ")
+    # prompt = input("Please enter a prompt: ")
+    prompt = get_prompt_cli()
     image_paths = image_generation_service.generate_images_for_prompt(
         prompt, IMAGE_DIR, SESSION_TOKEN, demo_mode=DEMO_MODE
     )

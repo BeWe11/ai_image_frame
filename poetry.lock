@@ -401,6 +401,22 @@ python-versions = "*"
 tests = ["pytest"]
 
 [[package]]
+name = "pvcheetah"
+version = "1.1.1"
+description = "Cheetah Speech-to-Text Engine."
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
+name = "pvrecorder"
+version = "1.1.1"
+description = "Recorder library for Picovoice."
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
 name = "py"
 version = "1.11.0"
 description = "library with cross-python path, ini-parsing, io, code, log facilities"
@@ -580,7 +596,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "7b355ee78272a49d791c8dba642ecc235aeb4c609c986e244e850cfc7d11e959"
+content-hash = "0b6418434aacea8302c446b3276cc042510523d79d3d12a40c03c27ba929ee67"
 
 [metadata.files]
 appnope = [
@@ -818,6 +834,14 @@ ptyprocess = [
 pure-eval = [
     {file = "pure_eval-0.2.2-py3-none-any.whl", hash = "sha256:01eaab343580944bc56080ebe0a674b39ec44a945e6d09ba7db3cb8cec289350"},
     {file = "pure_eval-0.2.2.tar.gz", hash = "sha256:2b45320af6dfaa1750f543d714b6d1c520a1688dec6fd24d339063ce0aaa9ac3"},
+]
+pvcheetah = [
+    {file = "pvcheetah-1.1.1-py3-none-any.whl", hash = "sha256:3a8ebfd0d841f42f89bfa06434d942dcfedf0ea511339f5ff04940b7feb1b137"},
+    {file = "pvcheetah-1.1.1.tar.gz", hash = "sha256:fe4996f67bcf4825628e56a9960b44a9906421780060ff102bca7e47e10e2d9c"},
+]
+pvrecorder = [
+    {file = "pvrecorder-1.1.1-py3-none-any.whl", hash = "sha256:a68ad66635792ffc1cbaacbed5cabc57c18605e5c4d5fe0827e44330fa12c190"},
+    {file = "pvrecorder-1.1.1.tar.gz", hash = "sha256:c7c56be85cd689d19b76b0d586942ef68abaf9f9b5c661d9043c3c9d2b5702a9"},
 ]
 py = [
     {file = "py-1.11.0-py2.py3-none-any.whl", hash = "sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378"},

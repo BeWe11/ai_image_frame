@@ -3,6 +3,7 @@ from . import (
     image_manipulation_service,
     inky_service,
     logging_service,
+    voice_service,
 )
 
 __all__ = [
@@ -10,4 +11,5 @@ __all__ = [
     "image_manipulation_service",
     "inky_service",
     "logging_service",
+    "voice_service",
 ]

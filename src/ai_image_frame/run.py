@@ -202,7 +202,7 @@ def show_image(image: Image.Image) -> None:
         inky.set_image(image, saturation=SATURATION)
         inky.show()
     elif RUN_MODE == "mac":
-        image.show()
+        image.rotate(-90, expand=True).show()
 
 
 def init_gpio() -> None:

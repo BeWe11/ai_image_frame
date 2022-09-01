@@ -3,7 +3,7 @@ from pathlib import Path
 from dalle2 import Dalle2
 
 
-def enrich_prompt(prompt: str) -> str:
+def _enrich_prompt(prompt: str) -> str:
     """Append stylistic instructions to the prompt to achieve a uniform style
     that looks good on the inky display.
     """
@@ -25,6 +25,6 @@ def generate_images_for_prompt(
         ]
     else:
         dalle_client = Dalle2(f"sess-{session_token}")
-        enriched_prompt = enrich_prompt(prompt)
+        enriched_prompt = _enrich_prompt(prompt)
         file_paths = dalle_client.generate_and_download(enriched_prompt, image_dir)
     return [Path(path_string) for path_string in file_paths]

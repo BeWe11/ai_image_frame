@@ -122,9 +122,9 @@ def show_collage(image_paths: list[Path], prompt: Union[str, list[str]]) -> None
     show_image(display_image)
 
 
-def remove_duplicates(l: list[Any]) -> list[Any]:
+def remove_duplicates(input_list: list[Any]) -> list[Any]:
     """Keep last occurences of elements."""
-    return list(reversed(list(dict.fromkeys(reversed(l)))))
+    return list(reversed(list(dict.fromkeys(reversed(input_list)))))
 
 
 def handle_new_prompt() -> None:

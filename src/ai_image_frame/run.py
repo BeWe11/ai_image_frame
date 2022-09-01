@@ -5,7 +5,11 @@ from typing import Any, Union
 from dotenv import load_dotenv
 from PIL import Image
 
-from ai_image_frame.services import image_generation_service, image_manipulation_service
+from ai_image_frame.services import (
+    image_generation_service,
+    image_manipulation_service,
+    inky_service,
+)
 
 load_dotenv()
 SESSION_TOKEN = os.getenv("DALLE2_SESSION_TOKEN")
@@ -15,8 +19,6 @@ RUN_MODE = os.getenv("RUN_MODE")
 CHOSEN_IMAGE_LOG_NAME = "chosen_images.log"
 GENERATED_IMAGE_LOG_NAME = "generated_images.log"
 
-# Gpio pins for each button (from left to right, reverse alphabetical order)
-BUTTON_PINS = [24, 16, 6, 5]
 BUTTON_LABELS = ["A", "B", "C", "D"]
 DEMO_MODE = True
 IMAGE_DIR = "images"
@@ -28,21 +30,9 @@ INKY_DIMENSIONS = image_manipulation_service.Dimensions(width=448, height=600)
 
 def show_image(image: Image.Image) -> None:
     if RUN_MODE == "pi":
-        from inky import Inky7Colour as Inky
-
-        inky = Inky()
-        inky.set_border(Inky.BLACK)
-        inky.set_image(image.rotate(90, expand=True), saturation=SATURATION)
-        inky.show()
+        inky_service.show_image(image, saturation=SATURATION)
     elif RUN_MODE == "mac":
         image.show()
-
-
-def init_gpio() -> None:
-    import RPi.GPIO as GPIO
-
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
 def append_to_chosen_image_log(image_path: Path, prompt: str) -> None:
@@ -64,18 +54,11 @@ def get_button_index(message: str) -> int:
             if candidate_label in BUTTON_LABELS:
                 chosen_label = candidate_label
     elif RUN_MODE == "pi":
-        import RPi.GPIO as GPIO
-
         print(message)
         while chosen_label is None:
-            if GPIO.input(BUTTON_PINS[0]) == GPIO.LOW:
-                chosen_label = BUTTON_LABELS[0]
-            elif GPIO.input(BUTTON_PINS[1]) == GPIO.LOW:
-                chosen_label = BUTTON_LABELS[1]
-            elif GPIO.input(BUTTON_PINS[2]) == GPIO.LOW:
-                chosen_label = BUTTON_LABELS[2]
-            elif GPIO.input(BUTTON_PINS[3]) == GPIO.LOW:
-                chosen_label = BUTTON_LABELS[3]
+            chosen_index = inky_service.get_pressed_button()
+            if chosen_index is not None:
+                chosen_label = BUTTON_LABELS[chosen_index]
     return BUTTON_LABELS.index(chosen_label)
 
 
@@ -137,20 +120,14 @@ def handle_previous_choices() -> None:
 
 def handle_clear() -> None:
     if RUN_MODE == "pi":
-        from inky import Inky7Colour as Inky
-
-        inky = Inky()
-        for y in range(inky.height - 1):
-            for x in range(inky.width - 1):
-                inky.set_pixel(x, y, Inky.CLEAN)
-        inky.show()
+        inky_service.clear_screen()
     elif RUN_MODE == "mac":
         pass
 
 
 def run_main_loop() -> None:
     if RUN_MODE == "pi":
-        init_gpio()
+        inky_service.init_gpio()
 
     while True:
         button_index = get_button_index(

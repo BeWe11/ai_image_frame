@@ -14,10 +14,11 @@ from ai_image_frame.services import (
 load_dotenv()
 SESSION_TOKEN = os.environ["DALLE2_SESSION_TOKEN"]
 RUN_MODE = os.environ["RUN_MODE"]
+LOG_PATH = Path(os.environ["LOG_PATH"])
 
 
-CHOSEN_IMAGE_LOG_PATH = Path("chosen_images.log")
-GENERATED_IMAGE_LOG_PATH = Path("generated_images.log")
+CHOSEN_IMAGE_LOG_PATH = LOG_PATH / "chosen_images.log"
+GENERATED_IMAGE_LOG_PATH = LOG_PATH / "generated_images.log"
 
 BUTTON_LABELS = ["A", "B", "C", "D"]
 DEMO_MODE = True

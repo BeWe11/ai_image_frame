@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from typing import Any, Union
 
 from dotenv import load_dotenv
 from PIL import Image
@@ -9,6 +8,7 @@ from ai_image_frame.services import (
     image_generation_service,
     image_manipulation_service,
     inky_service,
+    logging_service,
 )
 
 load_dotenv()
@@ -16,8 +16,8 @@ SESSION_TOKEN = os.getenv("DALLE2_SESSION_TOKEN")
 RUN_MODE = os.getenv("RUN_MODE")
 
 
-CHOSEN_IMAGE_LOG_NAME = "chosen_images.log"
-GENERATED_IMAGE_LOG_NAME = "generated_images.log"
+CHOSEN_IMAGE_LOG_PATH = Path("chosen_images.log")
+GENERATED_IMAGE_LOG_PATH = Path("generated_images.log")
 
 BUTTON_LABELS = ["A", "B", "C", "D"]
 DEMO_MODE = True
@@ -33,17 +33,6 @@ def show_image(image: Image.Image) -> None:
         inky_service.show_image(image, saturation=SATURATION)
     elif RUN_MODE == "mac":
         image.show()
-
-
-def append_to_chosen_image_log(image_path: Path, prompt: str) -> None:
-    with open(CHOSEN_IMAGE_LOG_NAME, "a") as f:
-        f.write(f"{image_path},{prompt}\n")
-
-
-def append_to_generated_image_log(image_paths: list[Path], prompt: str) -> None:
-    with open(GENERATED_IMAGE_LOG_NAME, "a") as f:
-        for image_path in image_paths:
-            f.write(f"{image_path},{prompt}\n")
 
 
 def get_button_index(message: str) -> int:
@@ -62,7 +51,7 @@ def get_button_index(message: str) -> int:
     return BUTTON_LABELS.index(chosen_label)
 
 
-def show_collage(image_paths: list[Path], prompt: Union[str, list[str]]) -> None:
+def show_collage(image_paths: list[Path], prompts: list[str]) -> None:
     images = [Image.open(image_path) for image_path in image_paths]
 
     collage_image = image_manipulation_service.generate_collage_image(
@@ -75,9 +64,10 @@ def show_collage(image_paths: list[Path], prompt: Union[str, list[str]]) -> None
     )
 
     chosen_image = images[button_index]
-    if isinstance(prompt, list):
-        prompt = prompt[button_index]
-    append_to_chosen_image_log(image_paths[button_index], prompt)
+    prompt = prompts[button_index]
+    logging_service.append_images_to_log(
+        [image_paths[button_index]], [prompt], CHOSEN_IMAGE_LOG_PATH
+    )
     display_image = image_manipulation_service.generate_display_image(
         chosen_image, prompt, INKY_DIMENSIONS
     )
@@ -85,37 +75,29 @@ def show_collage(image_paths: list[Path], prompt: Union[str, list[str]]) -> None
     show_image(display_image)
 
 
-def remove_duplicates(input_list: list[Any]) -> list[Any]:
-    """Keep last occurences of elements."""
-    return list(reversed(list(dict.fromkeys(reversed(input_list)))))
-
-
 def handle_new_prompt() -> None:
     prompt = input("Please enter a prompt: ")
     image_paths = image_generation_service.generate_images_for_prompt(
         prompt, IMAGE_DIR, SESSION_TOKEN, demo_mode=DEMO_MODE
     )
-    append_to_generated_image_log(image_paths, prompt)
-    show_collage(image_paths, prompt)
+    logging_service.append_images_to_log(
+        image_paths, [prompt] * len(image_paths), GENERATED_IMAGE_LOG_PATH
+    )
+    show_collage(image_paths, [prompt] * len(BUTTON_LABELS))
 
 
 def handle_last_prompt() -> None:
-    with open(GENERATED_IMAGE_LOG_NAME, "a+") as f:
-        f.seek(0)
-        lines = list(f)
-    prompt = (lines[-1].split(",")[1]).strip()
-    image_paths = [Path(line.split(",")[0]) for line in lines][-len(BUTTON_LABELS) :]
-    show_collage(image_paths, prompt)
+    image_paths, prompts = logging_service.get_images_from_log(
+        GENERATED_IMAGE_LOG_PATH, len(BUTTON_LABELS)
+    )
+    show_collage(image_paths, prompts)
 
 
 def handle_previous_choices() -> None:
-    with open(CHOSEN_IMAGE_LOG_NAME, "a+") as f:
-        f.seek(0)
-        lines = list(f)
-    prompts = [line.split(",")[1] for line in lines]
-    image_paths = [Path(line.split(",")[0]) for line in lines]
-    last_images_paths = remove_duplicates(image_paths)[: len(BUTTON_LABELS)]
-    show_collage(last_images_paths, prompts[-1].strip())  # FIXME
+    image_paths, prompts = logging_service.get_images_from_log(
+        CHOSEN_IMAGE_LOG_PATH, len(BUTTON_LABELS)
+    )
+    show_collage(image_paths, prompts)
 
 
 def handle_clear() -> None:

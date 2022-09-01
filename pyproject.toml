@@ -34,6 +34,7 @@ line_length = 120
 [tool.mypy]
 python_version = "3.9"
 strict = true
+exclude = "dist"
 
 [[tool.mypy.overrides]]
 module = "dalle2" 

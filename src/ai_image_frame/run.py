@@ -12,8 +12,8 @@ from ai_image_frame.services import (
 )
 
 load_dotenv()
-SESSION_TOKEN = os.getenv("DALLE2_SESSION_TOKEN")
-RUN_MODE = os.getenv("RUN_MODE")
+SESSION_TOKEN = os.environ["DALLE2_SESSION_TOKEN"]
+RUN_MODE = os.environ["RUN_MODE"]
 
 
 CHOSEN_IMAGE_LOG_PATH = Path("chosen_images.log")

@@ -11,7 +11,7 @@ def append_images_to_log(
     image_paths: list[Path], prompts: list[str], log_path: Path
 ) -> None:
     """Append the image/prompt pairs to the given log."""
-    print(f"{image_paths = }")
+    log_path.parent.mkdir(parents=True, exist_ok=True)
     with open(log_path, "a") as f:
         for image_path, prompt in zip(image_paths, prompts):
             f.write(f"{image_path},{prompt}\n")
@@ -25,6 +25,8 @@ def get_images_from_log(
     The log is opened with `a+` mode so that the log file is created if it
     doens't exist.
     """
+    if not log_path.is_file():
+        return ([], [])
     with open(log_path, "a+") as f:
         f.seek(0)
         lines = f.read().splitlines()

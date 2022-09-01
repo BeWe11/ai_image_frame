@@ -35,7 +35,7 @@ def show_image(image: Image.Image) -> None:
         image.show()
 
 
-def get_button_index(message: str) -> int:
+def get_choice(message: str) -> int:
     chosen_label = None
     if RUN_MODE == "mac":
         while chosen_label is None:
@@ -48,6 +48,8 @@ def get_button_index(message: str) -> int:
             chosen_index = inky_service.get_pressed_button()
             if chosen_index is not None:
                 chosen_label = BUTTON_LABELS[chosen_index]
+    else:
+        raise ValueError(f"Unsupported RUN_MODE {RUN_MODE}.")
     return BUTTON_LABELS.index(chosen_label)
 
 
@@ -59,14 +61,14 @@ def show_collage(image_paths: list[Path], prompts: list[str]) -> None:
     )
     show_image(collage_image)
 
-    button_index = get_button_index(
+    choice = get_choice(
         f"Please choose one image to display ({', '.join(BUTTON_LABELS[:-1])} or {BUTTON_LABELS[-1]}): "
     )
 
-    chosen_image = images[button_index]
-    prompt = prompts[button_index]
+    chosen_image = images[choice]
+    prompt = prompts[choice]
     logging_service.append_images_to_log(
-        [image_paths[button_index]], [prompt], CHOSEN_IMAGE_LOG_PATH
+        [image_paths[choice]], [prompt], CHOSEN_IMAGE_LOG_PATH
     )
     display_image = image_manipulation_service.generate_display_image(
         chosen_image, prompt, INKY_DIMENSIONS
@@ -112,7 +114,7 @@ def run_main_loop() -> None:
         inky_service.init_gpio()
 
     while True:
-        button_index = get_button_index(
+        choice = get_choice(
             """Please choose an action:
 
 A: Generate an image for a new prompt.
@@ -121,13 +123,13 @@ C: Choose from the last four previous choices.
 D: Clear the display.
 """
         )
-        if button_index == 0:
+        if choice == 0:
             handle_new_prompt()
-        elif button_index == 1:
+        elif choice == 1:
             handle_last_prompt()
-        elif button_index == 2:
+        elif choice == 2:
             handle_previous_choices()
-        elif button_index == 3:
+        elif choice == 3:
             handle_clear()
 
 

@@ -14,15 +14,15 @@ from ai_image_frame.services import (
 load_dotenv()
 SESSION_TOKEN = os.environ["DALLE2_SESSION_TOKEN"]
 RUN_MODE = os.environ["RUN_MODE"]
-LOG_PATH = Path(os.environ["LOG_PATH"])
+LOG_DIR = Path(os.environ["LOG_DIR"])
+IMAGE_DIR = Path(os.environ["IMAGE_DIR"])
 
 
-CHOSEN_IMAGE_LOG_PATH = LOG_PATH / "chosen_images.log"
-GENERATED_IMAGE_LOG_PATH = LOG_PATH / "generated_images.log"
+CHOSEN_IMAGE_LOG_PATH = LOG_DIR / "chosen_images.log"
+GENERATED_IMAGE_LOG_PATH = LOG_DIR / "generated_images.log"
 
 BUTTON_LABELS = ["A", "B", "C", "D"]
 DEMO_MODE = True
-IMAGE_DIR = "images"
 SATURATION = 0.5
 DALLE_DIMENSIONS = image_manipulation_service.Dimensions(width=1024, height=1024)
 # Inky is used in portrait mode, there dimensions are swapped

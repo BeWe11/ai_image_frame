@@ -18,10 +18,10 @@ def generate_images_for_prompt(
 ) -> list[Path]:
     if demo_mode:
         file_paths = [
-            "images/generation-nkkmR7oHwVLFVBjDAzF0LQzn.png",
-            "images/generation-npDqQCEtvXG0L5lM5jfPkmXZ.png",
-            "images/generation-Or0d74d5Ry8ltvbliUgkJOZb.png",
-            "images/generation-Z4Uqw7G5JtPJCskogQibFuub.png",
+            f"{image_dir}/generation-nkkmR7oHwVLFVBjDAzF0LQzn.png",
+            f"{image_dir}/generation-npDqQCEtvXG0L5lM5jfPkmXZ.png",
+            f"{image_dir}/generation-Or0d74d5Ry8ltvbliUgkJOZb.png",
+            f"{image_dir}/generation-Z4Uqw7G5JtPJCskogQibFuub.png",
         ]
     else:
         dalle_client = Dalle2(f"sess-{session_token}")

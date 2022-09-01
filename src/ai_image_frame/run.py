@@ -22,7 +22,7 @@ DEMO_MODE = True
 IMAGE_DIR = "images"
 SATURATION = 0.5
 DALLE_DIMENSIONS = image_manipulation_service.Dimensions(width=1024, height=1024)
-# INKY_DIMENSIONS = image_manipulation_service.Dimensions(width=600, height=448)
+# Inky is used in portrait mode, there dimensions are swapped
 INKY_DIMENSIONS = image_manipulation_service.Dimensions(width=448, height=600)
 
 

@@ -14,7 +14,7 @@ def append_images_to_log(
     log_path.parent.mkdir(parents=True, exist_ok=True)
     with open(log_path, "a") as f:
         for image_path, prompt in zip(image_paths, prompts):
-            f.write(f"{image_path.stem},{prompt}\n")
+            f.write(f"{image_path.name},{prompt}\n")
 
 
 def get_images_from_log(

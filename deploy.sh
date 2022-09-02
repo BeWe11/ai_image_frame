@@ -4,6 +4,7 @@ WHEEL_FILE=ai_image_frame-0.1.0-py3-none-any.whl
 # Copy images
 ssh $PI_LOC mkdir -p ai_image_frame
 scp -r images $PI_LOC:ai_image_frame/
+scp -r logs $PI_LOC:ai_image_frame/
 
 # Install the python package
 poetry build

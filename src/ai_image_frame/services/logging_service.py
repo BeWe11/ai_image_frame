@@ -14,11 +14,11 @@ def append_images_to_log(
     log_path.parent.mkdir(parents=True, exist_ok=True)
     with open(log_path, "a") as f:
         for image_path, prompt in zip(image_paths, prompts):
-            f.write(f"{image_path},{prompt}\n")
+            f.write(f"{image_path.stem},{prompt}\n")
 
 
 def get_images_from_log(
-    log_path: Path, num_entries: int
+    log_path: Path, image_dir: Path, num_entries: int
 ) -> tuple[list[Path], list[str]]:
     """Return a number of recent unique images in the given log as path/prompt pairs.
 
@@ -34,7 +34,7 @@ def get_images_from_log(
     prompts = []
     for line in reversed(lines):
         image_path_string, prompt = line.split(",")
-        image_path = Path(image_path_string)
+        image_path = image_dir / Path(image_path_string)
         if image_path not in image_paths:
             image_paths.append(image_path)
             prompts.append(prompt)

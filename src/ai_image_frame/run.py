@@ -100,14 +100,14 @@ def handle_new_prompt() -> None:
 
 def handle_last_prompt() -> None:
     image_paths, prompts = logging_service.get_images_from_log(
-        GENERATED_IMAGE_LOG_PATH, len(BUTTON_LABELS)
+        GENERATED_IMAGE_LOG_PATH, IMAGE_DIR, len(BUTTON_LABELS)
     )
     show_collage(image_paths, prompts)
 
 
 def handle_previous_choices() -> None:
     image_paths, prompts = logging_service.get_images_from_log(
-        CHOSEN_IMAGE_LOG_PATH, len(BUTTON_LABELS)
+        CHOSEN_IMAGE_LOG_PATH, IMAGE_DIR, len(BUTTON_LABELS)
     )
     show_collage(image_paths, prompts)
 

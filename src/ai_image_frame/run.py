@@ -65,9 +65,12 @@ def show_collage(image_paths: list[Path], prompts: list[str]) -> None:
     )
     show_image(collage_image)
 
-    choice = get_choice(
-        f"Please choose one image to display ({', '.join(BUTTON_LABELS[:-1])} or {BUTTON_LABELS[-1]}): "
-    )
+    if INPUT_VOICE:
+        choice = voice_service.get_voice_choice()
+    else:
+        choice = get_choice(
+            f"Please choose one image to display ({', '.join(BUTTON_LABELS[:-1])} or {BUTTON_LABELS[-1]}): "
+        )
 
     chosen_image = images[choice]
     prompt = prompts[choice]

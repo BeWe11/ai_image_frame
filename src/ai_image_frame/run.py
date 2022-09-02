@@ -25,6 +25,7 @@ GENERATED_IMAGE_LOG_PATH = LOG_DIR / "generated_images.log"
 
 BUTTON_LABELS = ["A", "B", "C", "D"]
 DEMO_MODE = True
+INPUT_VOICE = False
 SATURATION = 0.5
 DALLE_DIMENSIONS = image_manipulation_service.Dimensions(width=1024, height=1024)
 # Inky is used in portrait mode, there dimensions are swapped
@@ -80,16 +81,11 @@ def show_collage(image_paths: list[Path], prompts: list[str]) -> None:
     show_image(display_image)
 
 
-def get_prompt_cli() -> str:
-    prompt = voice_service.get_voice_input()
-    print(f"{prompt = }")
-    # prompt = input("Please enter a prompt: ")
-    return prompt
-
-
 def handle_new_prompt() -> None:
-    # prompt = input("Please enter a prompt: ")
-    prompt = get_prompt_cli()
+    if INPUT_VOICE:
+        prompt = voice_service.get_voice_input()
+    else:
+        prompt = input("Please enter a prompt: ")
     image_paths = image_generation_service.generate_images_for_prompt(
         prompt, IMAGE_DIR, SESSION_TOKEN, demo_mode=DEMO_MODE
     )

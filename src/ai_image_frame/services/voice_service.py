@@ -15,7 +15,7 @@ def get_voice_input() -> str:
         cheetah = pvcheetah.create(access_key=ACCESS_KEY, endpoint_duration_sec=1.0)
         recorder = PvRecorder(device_index=-1, frame_length=cheetah.frame_length)
         recorder.start()
-        print("Ready")
+        print("Cheetah ready")
         while True:
             partial_transcript, is_endpoint = cheetah.process(recorder.read())
             final_transcript += partial_transcript

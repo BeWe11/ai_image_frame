@@ -20,10 +20,10 @@ class Dimensions:
         return (self.width, self.height)
 
 
-def _get_font(font_size: int) -> ImageFont.ImageFont:
+def _get_font(font_size: int, font_name: str = "Amsterdam.ttf") -> ImageFont.ImageFont:
     """Return the base font for image labels."""
     return ImageFont.truetype(
-        f"{Path(__file__).parent.resolve()}/../Amsterdam.ttf", size=font_size
+        f"{Path(__file__).parent.resolve()}/../{font_name}", size=font_size
     )
 
 

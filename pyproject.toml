@@ -58,6 +58,10 @@ module = "pvcheetah"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
+module = "pvrhino" 
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
 module = "pvrecorder" 
 ignore_missing_imports = true
 

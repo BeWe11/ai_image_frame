@@ -3,6 +3,9 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
+SOLID_BLACK = (0, 0, 0)
+SOLID_WHITE = (255, 255, 255)
+
 
 @dataclass(frozen=True)
 class Dimensions:
@@ -45,8 +48,9 @@ def generate_text_box(
     text: str,
     dimensions: Dimensions,
     font_size: int = 10,
-    background_color: tuple[int, int, int] = (0, 0, 0),  # black
-    text_color: tuple[int, int, int] = (255, 255, 255),  # white
+    background_color: tuple[int, int, int] = SOLID_BLACK,
+    text_color: tuple[int, int, int] = SOLID_BLACK,
+    text_shift: tuple[int, int] = (0, 0),
 ) -> Image.Image:
     """Create a box containing text."""
     output_image = Image.new("RGB", dimensions.as_tuple(), background_color)
@@ -159,7 +163,7 @@ def generate_display_image(
     """Return the input image with a subtitle."""
     assert output_dimensions.is_portrait, "Image must be in portrait orientation"
 
-    display_image = Image.new("RGB", output_dimensions.as_tuple())
+    display_image = Image.new("RGB", output_dimensions.as_tuple(), SOLID_BLACK)
     display_image.paste(
         input_image.resize((output_dimensions.width, output_dimensions.width)),
         (0, 0),

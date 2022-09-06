@@ -97,13 +97,30 @@ def generate_text_box(
 
 def pad_image(
     input_image: Image.Image,
-    padding_top: int = 0,
-    padding_right: int = 0,
-    padding_bottom: int = 0,
-    padding_left: int = 0,
+    padding_top: Optional[int] = None,
+    padding_right: Optional[int] = None,
+    padding_bottom: Optional[int] = None,
+    padding_left: Optional[int] = None,
 ) -> Image.Image:
-    """Return the input image with padding."""
-    padded_image = Image.new("RGB", input_image.size)
+    """Return the input image with padding.
+
+    If only `padding_top` is given (for example by using a positional parameter
+    with `pad_image(image, 30)`), the padding value is interpreted to be a
+    general padding for all directions.
+    """
+    if padding_top is not None and all(
+        padding is None for padding in [padding_right, padding_bottom, padding_left]
+    ):
+        padding_right = padding_top
+        padding_bottom = padding_top
+        padding_left = padding_top
+    else:
+        padding_top = 0 if padding_top is None else padding_top
+        padding_right = 0 if padding_right is None else padding_right
+        padding_bottom = 0 if padding_bottom is None else padding_bottom
+        padding_left = 0 if padding_left is None else padding_left
+
+    padded_image = Image.new("RGBA", input_image.size, SOLID_BLACK)
     padded_image.paste(
         input_image.resize(
             (

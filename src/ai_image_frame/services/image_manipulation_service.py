@@ -1,3 +1,4 @@
+import textwrap
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
@@ -40,10 +41,7 @@ def _split_long_text(text: str, max_line_length: int) -> str:
     """Split long text by adding newline characters for lines exceeding the
     maximum desired line length.
     """
-    lines = [
-        text[i : i + max_line_length] for i in range(0, len(text), max_line_length)
-    ]
-    return "\n".join(lines)
+    return "\n".join(textwrap.wrap(text, width=max_line_length))
 
 
 def _overlay_label_image(

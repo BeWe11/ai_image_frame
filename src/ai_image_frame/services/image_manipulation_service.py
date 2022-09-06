@@ -73,22 +73,56 @@ def _overlay_label_image(
 def generate_text_box(
     text: str,
     output_dimensions: Dimensions,
-    font_size: int = 10,
+    font_size: int = 32,
     background_color: tuple[int, int, int] = SOLID_BLACK,
     text_color: tuple[int, int, int] = SOLID_BLACK,
     text_shift: tuple[int, int] = (0, 0),
+    text_padding: tuple[int, int] = (10, 10),
 ) -> Image.Image:
-    """Create a box containing text."""
-    text_box_image = Image.new("RGB", output_dimensions.as_tuple(), background_color)
+    """Create a box containing text.
 
+    The text is fit automatically into the bounding box by iteratively checking
+    whether a combination of line breaks and decreased font size will make the
+    text boundary box contained inside the image boundary box.
+    """
+    text_box_image = Image.new("RGB", output_dimensions.as_tuple(), background_color)
     text_box_image = _overlay_label_image(text_box_image)
+
+    xy = (
+        output_dimensions.width / 2 + text_shift[0],
+        output_dimensions.height / 2 + text_shift[1],
+    )
+    allowed_empty_y_fraction = 0.6
+    image_boundary_box = text_box_image.getbbox()
+    original_font_size = font_size
+    max_line_length = len(text)
     draw = ImageDraw.Draw(text_box_image)
+
+    while True:
+        font = _get_font(font_size=font_size)
+        wrapped_text = _split_long_text(text, max_line_length)
+        text_bounding_box = draw.textbbox(
+            xy, wrapped_text, anchor="mm", align="center", font=font
+        )
+        if (
+            text_bounding_box[0] < image_boundary_box[0] + text_padding[0]
+            or text_bounding_box[2] > image_boundary_box[2] - text_padding[0]
+            or text_bounding_box[1] < image_boundary_box[1] + text_padding[1]
+            or text_bounding_box[3] > image_boundary_box[3] - text_padding[1]
+        ):
+            if (text_bounding_box[3] - text_bounding_box[1]) / (
+                image_boundary_box[3] - image_boundary_box[1]
+            ) < allowed_empty_y_fraction and max_line_length > 1:
+                max_line_length -= 1
+                font_size = original_font_size
+            else:
+                font_size -= 1
+        else:
+            break
+
     draw.text(
-        (
-            output_dimensions.width / 2 + text_shift[0],
-            output_dimensions.height / 2 + text_shift[1],
-        ),
-        text,
+        xy,
+        wrapped_text,
         anchor="mm",
         align="center",
         fill=text_color,
@@ -250,8 +284,7 @@ def generate_display_image(
         width=output_dimensions.width,
         height=output_dimensions.height - output_dimensions.width,
     )
-    label_box = generate_text_box(
-        _split_long_text(text, 50), label_box_dimensions, font_size=32, **kwargs
-    )
+
+    label_box = generate_text_box(text, label_box_dimensions, **kwargs)
     display_image.paste(label_box, (0, output_dimensions.width))
     return display_image

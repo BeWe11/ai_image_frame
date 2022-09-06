@@ -44,26 +44,55 @@ def _split_long_text(text: str, max_line_length: int) -> str:
     return "\n".join(lines)
 
 
+def _overlay_label_image(
+    input_image: Image.Image,
+    label_padding: int = 20,
+    label_image_name: str = "label.png",
+) -> Image.Image:
+    """Overlay the label image on top of the input image.
+
+    The label image is used a a backdrop for image text descriptions.
+    """
+    label_image = Image.open(f"{Path(__file__).parent.resolve()}/../{label_image_name}")
+    label_scale = input_image.width / label_image.width
+    label_image = label_image.resize(
+        (
+            round(label_image.width * label_scale),
+            round(label_image.height * label_scale),
+        )
+    )
+    label_padding = round(label_padding * label_scale)
+    label_image = pad_image(label_image, label_padding)
+    output_image = input_image.copy()
+    output_image.paste(label_image, (0, 0), label_image)
+    return output_image
+
+
 def generate_text_box(
     text: str,
-    dimensions: Dimensions,
+    output_dimensions: Dimensions,
     font_size: int = 10,
     background_color: tuple[int, int, int] = SOLID_BLACK,
     text_color: tuple[int, int, int] = SOLID_BLACK,
     text_shift: tuple[int, int] = (0, 0),
 ) -> Image.Image:
     """Create a box containing text."""
-    output_image = Image.new("RGB", dimensions.as_tuple(), background_color)
-    draw = ImageDraw.Draw(output_image)
+    text_box_image = Image.new("RGB", output_dimensions.as_tuple(), background_color)
+
+    text_box_image = _overlay_label_image(text_box_image)
+    draw = ImageDraw.Draw(text_box_image)
     draw.text(
-        (dimensions.width / 2, dimensions.height / 2),
+        (
+            output_dimensions.width / 2 + text_shift[0],
+            output_dimensions.height / 2 + text_shift[1],
+        ),
         text,
         anchor="mm",
         align="center",
         fill=text_color,
         font=_get_font(font_size=font_size),
     )
-    return output_image
+    return text_box_image
 
 
 def pad_image(

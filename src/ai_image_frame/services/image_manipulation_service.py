@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Optional
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -147,6 +148,7 @@ def generate_collage_image(
     assert (
         len(input_images) <= 4
     ), "Cannot display a collage with more than four images."
+    assert grid_padding % 2 == 0, "`grid_padding` must be an even number."
 
     collage_image = Image.new("RGB", output_dimensions.as_tuple())
 

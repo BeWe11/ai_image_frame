@@ -138,13 +138,13 @@ def generate_collage_image(
     input_images: list[Image.Image],
     labels: list[str],
     output_dimensions: Dimensions,
-    grid_padding: int = 20,
+    grid_padding: int = 4,
 ) -> Image.Image:
     """Generate a collage of the input images with labels as subtitles.
 
     This function is written for a maximum of four images.
     """
-    assert output_dimensions.is_portrait, "Image must be in portrait orientation"
+    assert output_dimensions.is_portrait, "Image must be in portrait orientation."
     assert (
         len(input_images) <= 4
     ), "Cannot display a collage with more than four images."
@@ -154,54 +154,49 @@ def generate_collage_image(
 
     half_output_width = round(output_dimensions.width / 2)
     half_output_height = round(output_dimensions.height / 2)
-    label_box_dimensions = Dimensions(
-        width=half_output_width,
-        height=round((output_dimensions.height - 2 * half_output_width) / 2),
-    )
+    half_grid_padding = round(grid_padding / 2)
 
     x_offsets = [0, half_output_width, 0, half_output_width]
     y_offsets = [0, 0, half_output_height, half_output_height]
     paddings = [
         {
             "padding_top": grid_padding,
-            "padding_right": round(grid_padding / 2),
-            "padding_bottom": 0,
+            "padding_right": half_grid_padding,
+            "padding_bottom": half_grid_padding,
             "padding_left": grid_padding,
         },
         {
             "padding_top": grid_padding,
             "padding_right": grid_padding,
-            "padding_bottom": 0,
-            "padding_left": round(grid_padding / 2),
+            "padding_bottom": half_grid_padding,
+            "padding_left": half_grid_padding,
         },
         {
-            "padding_top": 0,
-            "padding_right": round(grid_padding / 2),
-            "padding_bottom": 0,
+            "padding_top": grid_padding,
+            "padding_right": half_grid_padding,
+            "padding_bottom": half_grid_padding,
             "padding_left": grid_padding,
         },
         {
-            "padding_top": 0,
+            "padding_top": grid_padding,
             "padding_right": grid_padding,
-            "padding_bottom": 0,
-            "padding_left": round(grid_padding / 2),
+            "padding_bottom": half_grid_padding,
+            "padding_left": half_grid_padding,
         },
     ]
 
+    small_dimensions = Dimensions(width=half_output_width, height=half_output_height)
     for input_image, label, x_offset, y_offset, padding in zip(
         input_images, labels, x_offsets, y_offsets, paddings
     ):
-        collage_image.paste(
-            pad_image(input_image, **padding).resize(
-                (half_output_width, half_output_width)
-            ),
-            (x_offset, y_offset),
+        # FIXME: The hardcoded y-shift of 4 is necessary because the label
+        # letters are not perfectly centered inside the label image. It's not
+        # clear whether this is due to the image itself or whether its an
+        # artefact of some calculations inside this function.
+        image = generate_display_image(
+            input_image, label, small_dimensions, text_shift=(0, 4)
         )
-        label_box = generate_text_box(label, label_box_dimensions)
-        collage_image.paste(
-            label_box,
-            (x_offset, y_offset + half_output_height - label_box_dimensions.height),
-        )
+        collage_image.paste(pad_image(image, **padding), (x_offset, y_offset))
     return collage_image
 
 

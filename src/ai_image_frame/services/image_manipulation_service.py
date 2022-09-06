@@ -121,6 +121,10 @@ def pad_image(
         padding_bottom = 0 if padding_bottom is None else padding_bottom
         padding_left = 0 if padding_left is None else padding_left
 
+    assert padding_left + padding_right == padding_top + padding_bottom, \
+        f"Paddings {padding_top=}, {padding_right=}, {padding_bottom=}, {padding_top=} " \
+        " would change the aspect ratio."
+
     padded_image = Image.new("RGBA", input_image.size, SOLID_BLACK)
     padded_image.paste(
         input_image.resize(

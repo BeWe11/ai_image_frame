@@ -4,6 +4,8 @@ from typing import Any, Optional
 
 from PIL import Image, ImageDraw, ImageFont
 
+from .common import get_absolute_asset_path
+
 SOLID_BLACK = (0, 0, 0)
 SOLID_WHITE = (255, 255, 255)
 
@@ -28,11 +30,10 @@ class Dimensions:
         return str(self.as_tuple())
 
 
-def _get_font(font_size: int, font_name: str = "Amsterdam.ttf") -> ImageFont.ImageFont:
+def _get_font(font_size: int, font_name: str = "Silent Reaction.ttf") -> ImageFont.ImageFont:
     """Return the base font for image labels."""
-    return ImageFont.truetype(
-        f"{Path(__file__).parent.resolve()}/../{font_name}", size=font_size
-    )
+    font_path = get_absolute_asset_path(Path("fonts") / font_name)
+    return ImageFont.truetype(str(font_path), size=font_size)
 
 
 def _split_long_text(text: str, max_line_length: int) -> str:
@@ -54,7 +55,7 @@ def _overlay_label_image(
 
     The label image is used a a backdrop for image text descriptions.
     """
-    label_image = Image.open(f"{Path(__file__).parent.resolve()}/../{label_image_name}")
+    label_image = Image.open(get_absolute_asset_path(Path("images") / label_image_name))
     label_scale = input_image.width / label_image.width
     label_image = label_image.resize(
         (
@@ -121,9 +122,10 @@ def pad_image(
         padding_bottom = 0 if padding_bottom is None else padding_bottom
         padding_left = 0 if padding_left is None else padding_left
 
-    assert padding_left + padding_right == padding_top + padding_bottom, \
-        f"Paddings {padding_top=}, {padding_right=}, {padding_bottom=}, {padding_top=} " \
+    assert padding_left + padding_right == padding_top + padding_bottom, (
+        f"Paddings {padding_top=}, {padding_right=}, {padding_bottom=}, {padding_top=} "
         " would change the aspect ratio."
+    )
 
     padded_image = Image.new("RGBA", input_image.size, SOLID_BLACK)
     padded_image.paste(
@@ -214,7 +216,7 @@ def _overlay_frame_image(
     The input image is padded so that the frame does not conceal the outer
     parts of the image.
     """
-    frame_image = Image.open(f"{Path(__file__).parent.resolve()}/../{frame_image_name}")
+    frame_image = Image.open(get_absolute_asset_path(Path("images") / frame_image_name))
     frame_scale = input_image.width / frame_image.width
     frame_image = frame_image.resize(
         (
@@ -249,7 +251,7 @@ def generate_display_image(
         height=output_dimensions.height - output_dimensions.width,
     )
     label_box = generate_text_box(
-        _split_long_text(text, 50), label_box_dimensions, font_size=16, **kwargs
+        _split_long_text(text, 50), label_box_dimensions, font_size=32, **kwargs
     )
     display_image.paste(label_box, (0, output_dimensions.width))
     return display_image

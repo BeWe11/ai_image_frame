@@ -13,11 +13,15 @@ class Dimensions:
 
     @property
     def is_portrait(self) -> bool:
+        """Return whether the dimensions represent an image in portrait mode."""
         return self.height >= self.width
 
     def as_tuple(self) -> tuple[int, int]:
         """Return dimensions as a tuple of (width, height)."""
         return (self.width, self.height)
+
+    def __repr__(self) -> str:
+        return str(self.as_tuple())
 
 
 def _get_font(font_size: int, font_name: str = "Amsterdam.ttf") -> ImageFont.ImageFont:

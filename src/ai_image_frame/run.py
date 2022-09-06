@@ -23,7 +23,7 @@ IMAGE_DIR = Path(os.environ["IMAGE_DIR"])
 CHOSEN_IMAGE_LOG_PATH = LOG_DIR / "chosen_images.log"
 GENERATED_IMAGE_LOG_PATH = LOG_DIR / "generated_images.log"
 
-BUTTON_LABELS = ["A", "B", "C", "D"]
+BUTTON_LABELS = ["1", "2", "3", "4"]
 DEMO_MODE = True
 INPUT_VOICE = False
 SATURATION = 0.5
@@ -125,12 +125,12 @@ def run_main_loop() -> None:
 
     while True:
         choice = get_choice(
-            """Please choose an action:
+            f"""Please choose an action:
 
-A: Generate an image for a new prompt.
-B: Choose again for the last prompt.
-C: Choose from the last four previous choices.
-D: Clear the display.
+{BUTTON_LABELS[0]}: Generate an image for a new prompt.
+{BUTTON_LABELS[1]}: Choose again for the last prompt.
+{BUTTON_LABELS[2]}: Choose from the last four previous choices.
+{BUTTON_LABELS[3]}: Clear the display.
 """
         )
         if choice == 0:

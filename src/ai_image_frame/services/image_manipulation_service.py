@@ -108,7 +108,7 @@ def pad_image(
         input_image.resize(
             (
                 input_image.size[0] - (padding_left + padding_right),
-                input_image.size[1] - -(padding_top + padding_bottom),
+                input_image.size[1] - (padding_top + padding_bottom),
             )
         ),
         (padding_left, padding_top),

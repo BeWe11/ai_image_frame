@@ -31,7 +31,9 @@ class Dimensions:
         return str(self.as_tuple())
 
 
-def _get_font(font_size: int, font_name: str = "Silent Reaction.ttf") -> ImageFont.ImageFont:
+def _get_font(
+    font_size: int, font_name: str = "Silent Reaction.ttf"
+) -> ImageFont.ImageFont:
     """Return the base font for image labels."""
     font_path = get_absolute_asset_path(Path("fonts") / font_name)
     return ImageFont.truetype(str(font_path), size=font_size)

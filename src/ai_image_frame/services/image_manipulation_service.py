@@ -47,7 +47,7 @@ def _split_long_text(text: str, max_line_length: int) -> str:
 
 def _overlay_label_image(
     input_image: Image.Image,
-    label_padding: int = 20,
+    label_padding: int = 20,  # FIXME: hardcoded for the specific image file
     label_image_name: str = "label.png",
 ) -> Image.Image:
     """Overlay the label image on top of the input image.
@@ -200,10 +200,37 @@ def generate_collage_image(
     return collage_image
 
 
-def generate_display_image(
-    input_image: Image.Image, text: str, output_dimensions: Dimensions
+def _overlay_frame_image(
+    input_image: Image.Image,
+    image_padding: int = 30,  # FIXME: hardcoded for the specific image file
+    frame_image_name: str = "frame.png",
 ) -> Image.Image:
-    """Return the input image with a subtitle."""
+    """Overlay the frame image on top of the input image.
+
+    The input image is padded so that the frame does not conceal the outer
+    parts of the image.
+    """
+    frame_image = Image.open(f"{Path(__file__).parent.resolve()}/../{frame_image_name}")
+    frame_scale = input_image.width / frame_image.width
+    frame_image = frame_image.resize(
+        (
+            round(frame_image.width * frame_scale),
+            round(frame_image.height * frame_scale),
+        )
+    )
+    image_padding = round(image_padding * frame_scale)
+    output_image = pad_image(input_image, image_padding)
+    output_image.paste(frame_image, (0, 0), frame_image)
+    return output_image
+
+
+def generate_display_image(
+    input_image: Image.Image, text: str, output_dimensions: Dimensions, **kwargs: Any
+) -> Image.Image:
+    """Return the input image with a subtitle.
+
+    All extra keywords arguments are passed to `generate_text_box`.
+    """
     assert output_dimensions.is_portrait, "Image must be in portrait orientation"
 
     display_image = Image.new("RGB", output_dimensions.as_tuple(), SOLID_BLACK)
@@ -211,13 +238,14 @@ def generate_display_image(
         input_image.resize((output_dimensions.width, output_dimensions.width)),
         (0, 0),
     )
+    display_image = _overlay_frame_image(display_image)
 
     label_box_dimensions = Dimensions(
         width=output_dimensions.width,
         height=output_dimensions.height - output_dimensions.width,
     )
     label_box = generate_text_box(
-        _split_long_text(text, 50), label_box_dimensions, font_size=16
+        _split_long_text(text, 50), label_box_dimensions, font_size=16, **kwargs
     )
     display_image.paste(label_box, (0, output_dimensions.width))
     return display_image

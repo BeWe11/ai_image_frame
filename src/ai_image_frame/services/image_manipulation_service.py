@@ -164,26 +164,26 @@ def generate_collage_image(
     y_offsets = [0, 0, half_output_height, half_output_height]
     paddings = [
         {
-            "padding_top": grid_padding,
+            "padding_top": 0,
             "padding_right": half_grid_padding,
             "padding_bottom": half_grid_padding,
-            "padding_left": grid_padding,
+            "padding_left": 0,
         },
         {
-            "padding_top": grid_padding,
-            "padding_right": grid_padding,
+            "padding_top": 0,
+            "padding_right": 0,
             "padding_bottom": half_grid_padding,
             "padding_left": half_grid_padding,
         },
         {
-            "padding_top": grid_padding,
+            "padding_top": 0,
             "padding_right": half_grid_padding,
             "padding_bottom": half_grid_padding,
-            "padding_left": grid_padding,
+            "padding_left": 0,
         },
         {
-            "padding_top": grid_padding,
-            "padding_right": grid_padding,
+            "padding_top": 0,
+            "padding_right": 0,
             "padding_bottom": half_grid_padding,
             "padding_left": half_grid_padding,
         },

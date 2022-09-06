@@ -24,7 +24,7 @@ CHOSEN_IMAGE_LOG_PATH = LOG_DIR / "chosen_images.log"
 GENERATED_IMAGE_LOG_PATH = LOG_DIR / "generated_images.log"
 
 BUTTON_LABELS = ["1", "2", "3", "4"]
-DEMO_MODE = True
+DEMO_MODE = os.getenv("DEMO_MODE", "True") != "False"  # FIXME
 INPUT_VOICE = True
 SATURATION = 0.5
 DALLE_DIMENSIONS = image_manipulation_service.Dimensions(width=1024, height=1024)

@@ -69,3 +69,7 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = "RPi.*" 
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "simpleaudio.*" 
+ignore_missing_imports = true

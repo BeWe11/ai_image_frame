@@ -1,4 +1,5 @@
 from . import (
+    audio_service,
     image_generation_service,
     image_manipulation_service,
     inky_service,
@@ -7,6 +8,7 @@ from . import (
 )
 
 __all__ = [
+    "audio_service",
     "image_generation_service",
     "image_manipulation_service",
     "inky_service",

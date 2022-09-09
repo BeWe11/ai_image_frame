@@ -38,3 +38,15 @@ Run `deploy.sh`
 ## Run the program
 
 A `run_image_frame_loop` script is installed.
+
+## TODO
+
+- Implement state machine with possibility to go back to main state at any point
+- Refactor `run.py`, it's way too imperative
+- Allow button and voice choices simultaniously
+- Decrease image frame width, it takes away too many valuable pixels
+- Put Text-to-label-fitting algorithm into its own function
+- Maybe: use picovoice porcupine for hotword instead of button press for initial action
+- Use script arguments to `run.py` instead of global and environment variables to define behaviour
+- Remove all sensitive data (pi username etc)
+- Don't check in assets, only reference in readme that these have to be downloaded

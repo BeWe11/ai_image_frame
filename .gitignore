@@ -161,3 +161,4 @@ cython_debug/
 
 /images/
 *.rhn
+/src/ai_image_frame/assets/sounds/waiting.wav

@@ -27,6 +27,15 @@ On the pi:
 
 - run `poetry install`
 
+### Assets
+
+Most used assets have a free license and are checked into this repository. The
+following assets are not checked and have to be placed into the approprate
+paths by the user:
+- `assets/sounds/waiting.wav`: An audio file containing music that will be
+  played when the user has to wait, e.g. when images are generated or send to
+  the inky display.
+
 ## Test microphone
 
 - `arecord --format=S16_LE --rate=16000 | aplay --format=S16_LE --rate=16000`

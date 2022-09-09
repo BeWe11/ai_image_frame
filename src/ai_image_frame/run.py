@@ -1,18 +1,21 @@
 import os
 from pathlib import Path
 
+import simpleaudio as sa
 from dotenv import load_dotenv
 
 load_dotenv()
 from PIL import Image
 
 from ai_image_frame.services import (
+    audio_service,
     image_generation_service,
     image_manipulation_service,
     inky_service,
     logging_service,
     voice_service,
 )
+from ai_image_frame.services.common import get_absolute_asset_path
 
 SESSION_TOKEN = os.environ["DALLE2_SESSION_TOKEN"]
 RUN_MODE = os.environ["RUN_MODE"]
@@ -57,21 +60,31 @@ def get_choice(message: str) -> int:
     return BUTTON_LABELS.index(chosen_label)
 
 
-def show_collage(image_paths: list[Path], prompts: list[str]) -> None:
+def show_collage(
+    image_paths: list[Path], prompts: list[str], play_obj: sa.PlayObject = None
+) -> None:
     images = [Image.open(image_path) for image_path in image_paths]
 
     collage_image = image_manipulation_service.generate_collage_image(
         images, BUTTON_LABELS, INKY_DIMENSIONS
     )
     show_image(collage_image)
+    # FIXME: play_obj should not be an argument to this function
+    if play_obj is not None:
+        play_obj.stop()
 
-    if INPUT_VOICE:
+    # if INPUT_VOICE:
+    if False:
+        # FIXME: Buttons are cool, disable voice choice until voice and buttons can
+        # be used simultaniously
         choice = voice_service.get_voice_choice()
     else:
+        audio_service.play_sound("beep", blocking=False)
         choice = get_choice(
             f"Please choose one image to display ({', '.join(BUTTON_LABELS[:-1])} or {BUTTON_LABELS[-1]}): "
         )
 
+    play_obj = audio_service.play_sound("waiting", blocking=False)
     chosen_image = images[choice]
     prompt = prompts[choice]
     logging_service.append_images_to_log(
@@ -82,6 +95,7 @@ def show_collage(image_paths: list[Path], prompts: list[str]) -> None:
     )
 
     show_image(display_image)
+    play_obj.stop()
 
 
 def handle_new_prompt() -> None:
@@ -91,27 +105,30 @@ def handle_new_prompt() -> None:
         print(f"{prompt = }")
     else:
         prompt = input("Please enter a prompt: ")
+    play_obj = audio_service.play_sound("waiting", blocking=False)
     image_paths = image_generation_service.generate_images_for_prompt(
         prompt, IMAGE_DIR, SESSION_TOKEN, demo_mode=DEMO_MODE
     )
     logging_service.append_images_to_log(
         image_paths, [prompt] * len(image_paths), GENERATED_IMAGE_LOG_PATH
     )
-    show_collage(image_paths, [prompt] * len(BUTTON_LABELS))
+    show_collage(image_paths, [prompt] * len(BUTTON_LABELS), play_obj=play_obj)
 
 
 def handle_last_prompt() -> None:
+    play_obj = audio_service.play_sound("waiting", blocking=False)
     image_paths, prompts = logging_service.get_images_from_log(
         GENERATED_IMAGE_LOG_PATH, IMAGE_DIR, len(BUTTON_LABELS)
     )
-    show_collage(image_paths, prompts)
+    show_collage(image_paths, prompts, play_obj=play_obj)
 
 
 def handle_previous_choices() -> None:
+    play_obj = audio_service.play_sound("waiting", blocking=False)
     image_paths, prompts = logging_service.get_images_from_log(
         CHOSEN_IMAGE_LOG_PATH, IMAGE_DIR, len(BUTTON_LABELS)
     )
-    show_collage(image_paths, prompts)
+    show_collage(image_paths, prompts, play_obj=play_obj)
 
 
 def handle_clear() -> None:

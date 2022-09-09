@@ -1,4 +1,5 @@
 import os
+from distutils.util import strtobool
 from pathlib import Path
 
 import simpleaudio as sa
@@ -27,7 +28,7 @@ CHOSEN_IMAGE_LOG_PATH = LOG_DIR / "chosen_images.log"
 GENERATED_IMAGE_LOG_PATH = LOG_DIR / "generated_images.log"
 
 BUTTON_LABELS = ["1", "2", "3", "4"]
-DEMO_MODE = os.getenv("DEMO_MODE", "True") != "False"  # FIXME
+DEMO_MODE = bool(strtobool(os.environ["DEMO_MODE"]))
 INPUT_VOICE = True
 SATURATION = 0.5
 DALLE_DIMENSIONS = image_manipulation_service.Dimensions(width=1024, height=1024)

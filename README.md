@@ -23,6 +23,16 @@ On the pi:
 - `sudo systemctl --user enable ai_image_frame.service`
 - `sudo reboot`
 
+You can check script output with
+```
+journalctl --user-unit ai_image_frame
+```
+
+After changes, reload the service with
+```
+systemctl --user daemon-reload && systemctl --user restart ai_image_frame
+```
+
 ### Mac
 
 - run `poetry install`
@@ -50,6 +60,7 @@ A `run_image_frame_loop` script is installed.
 
 ## TODO
 
+- Use Stable Diffusion instead of Dall-E
 - Implement state machine with possibility to go back to main state at any point
 - Refactor `run.py`, it's way too imperative
 - Allow button and voice choices simultaniously

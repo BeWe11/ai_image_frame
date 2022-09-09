@@ -3,6 +3,7 @@ name = "ai_image_frame"
 version = "0.1.0"
 description = ""
 authors = ["Benjamin Weigang <benjamin.weigang@mailbox.org>"]
+include = ["src/ai_image_frame/assets/sounds/waiting.wav"]
 
 [tool.poetry.dependencies]
 python = "^3.9"

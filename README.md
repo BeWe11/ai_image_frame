@@ -15,6 +15,14 @@ curl https://get.pimoroni.com/inky | bash
 - Copy `.env.dist` as `~/ai_image_frame/.env` onto the pi, fill out all values
 - Follow [this tutorial](https://iotbytes.wordpress.com/connect-configure-and-test-usb-microphone-and-speaker-with-raspberry-pi/) to setup audio on the pi. Make sure to increase mic input volume in `alsamixer` to 100%.
 
+To install the systemd that autostarts the main script:
+- `scp ai_image_frame.service {user}@{pi_location}:`
+On the pi:
+- `sudo mv ai_image_frame.service /etc/systemd/user`
+- `sudo systemctl --user daemon-reload`
+- `sudo systemctl --user enable ai_image_frame.service`
+- `sudo reboot`
+
 ### Mac
 
 - run `poetry install`

@@ -1,0 +1,11 @@
+[Unit]
+Description=AI Image Frame Service
+
+[Service]
+Type=idle
+EnvironmentFile=/home/ben/ai_image_frame/.env
+ExecStart=/usr/bin/python3 /home/ben/.local/bin/run_image_frame_loop
+Restart=always
+
+[Install]
+WantedBy=default.target

@@ -27,6 +27,10 @@ On the pi:
 
 - run `poetry install`
 
+## Test microphone
+
+- `arecord --format=S16_LE --rate=16000 | aplay --format=S16_LE --rate=16000`
+
 ## Deploy changes
 
 Run `deploy.sh`

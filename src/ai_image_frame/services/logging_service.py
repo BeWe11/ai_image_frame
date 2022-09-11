@@ -30,14 +30,14 @@ def get_images_from_log(
     with open(log_path, "a+") as f:
         f.seek(0)
         lines = f.read().splitlines()
-    image_paths = []
-    prompts = []
+    image_paths: list[Path] = []
+    prompts: list[str] = []
     for line in reversed(lines):
         image_path_string, prompt = line.split(",")
         image_path = image_dir / Path(image_path_string)
         if image_path not in image_paths:
-            image_paths.append(image_path)
-            prompts.append(prompt)
+            image_paths.insert(0, image_path)
+            prompts.insert(0, prompt)
         if len(image_paths) >= num_entries:
             break
     return image_paths, prompts

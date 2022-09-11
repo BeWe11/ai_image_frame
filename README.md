@@ -16,12 +16,17 @@ curl https://get.pimoroni.com/inky | bash
 - Follow [this tutorial](https://iotbytes.wordpress.com/connect-configure-and-test-usb-microphone-and-speaker-with-raspberry-pi/) to setup audio on the pi. Make sure to increase mic input volume in `alsamixer` to 100%.
 
 To install the systemd that autostarts the main script:
-- `scp ai_image_frame.service {user}@{pi_location}:`
+```
+scp ai_image_frame.service {user}@{pi_location}:
+```
+
 On the pi:
-- `sudo mv ai_image_frame.service /etc/systemd/user`
-- `sudo systemctl --user daemon-reload`
-- `sudo systemctl --user enable ai_image_frame.service`
-- `sudo reboot`
+```
+sudo mv ai_image_frame.service /etc/systemd/user
+sudo systemctl --user daemon-reload
+sudo systemctl --user enable ai_image_frame.service
+sudo reboot
+```
 
 You can check script output with
 ```
@@ -48,7 +53,9 @@ paths by the user:
 
 ## Test microphone
 
-- `arecord --format=S16_LE --rate=16000 | aplay --format=S16_LE --rate=16000`
+```
+arecord --format=S16_LE --rate=16000 | aplay --format=S16_LE --rate=16000
+```
 
 ## Deploy changes
 

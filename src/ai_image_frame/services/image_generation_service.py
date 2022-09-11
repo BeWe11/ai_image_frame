@@ -10,7 +10,8 @@ def _enrich_prompt(prompt: str) -> str:
     styles = [
         "in the style of thomas kinkade",
     ]
-    return prompt + ", ".join(styles)
+    prompt_and_styles = [prompt] + styles
+    return ", ".join(prompt_and_styles)
 
 
 def generate_images_for_prompt(

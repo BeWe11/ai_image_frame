@@ -179,6 +179,7 @@ def generate_collage_image(
     labels: list[str],
     output_dimensions: Dimensions,
     grid_padding: int = 4,
+    show_frame: bool = True,
 ) -> Image.Image:
     """Generate a collage of the input images with labels as subtitles.
 
@@ -234,7 +235,11 @@ def generate_collage_image(
         # clear whether this is due to the image itself or whether its an
         # artefact of some calculations inside this function.
         image = generate_display_image(
-            input_image, label, small_dimensions, text_shift=(0, 4)
+            input_image,
+            label,
+            small_dimensions,
+            text_shift=(0, 4),
+            show_frame=show_frame,
         )
         collage_image.paste(pad_image(image, **padding), (x_offset, y_offset))
     return collage_image
@@ -265,7 +270,11 @@ def _overlay_frame_image(
 
 
 def generate_display_image(
-    input_image: Image.Image, text: str, output_dimensions: Dimensions, **kwargs: Any
+    input_image: Image.Image,
+    text: str,
+    output_dimensions: Dimensions,
+    show_frame: bool = False,
+    **kwargs: Any,
 ) -> Image.Image:
     """Return the input image with a subtitle.
 
@@ -278,7 +287,8 @@ def generate_display_image(
         input_image.resize((output_dimensions.width, output_dimensions.width)),
         (0, 0),
     )
-    display_image = _overlay_frame_image(display_image)
+    if show_frame:
+        display_image = _overlay_frame_image(display_image)
 
     label_box_dimensions = Dimensions(
         width=output_dimensions.width,

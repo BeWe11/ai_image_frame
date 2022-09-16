@@ -28,6 +28,7 @@ CHOSEN_IMAGE_LOG_PATH = LOG_DIR / "chosen_images.log"
 GENERATED_IMAGE_LOG_PATH = LOG_DIR / "generated_images.log"
 
 BUTTON_LABELS = ["1", "2", "3", "4"]
+SHOW_FRAME = False
 DEMO_MODE = bool(strtobool(os.environ["DEMO_MODE"]))
 INPUT_VOICE = True
 SATURATION = 0.5
@@ -67,7 +68,10 @@ def show_collage(
     images = [Image.open(image_path) for image_path in image_paths]
 
     collage_image = image_manipulation_service.generate_collage_image(
-        images, BUTTON_LABELS, INKY_DIMENSIONS
+        images,
+        BUTTON_LABELS,
+        INKY_DIMENSIONS,
+        show_frame=SHOW_FRAME,
     )
     show_image(collage_image)
     # FIXME: play_obj should not be an argument to this function
@@ -92,7 +96,10 @@ def show_collage(
         [image_paths[choice]], [prompt], CHOSEN_IMAGE_LOG_PATH
     )
     display_image = image_manipulation_service.generate_display_image(
-        chosen_image, prompt, INKY_DIMENSIONS
+        chosen_image,
+        prompt,
+        INKY_DIMENSIONS,
+        show_frame=SHOW_FRAME,
     )
 
     show_image(display_image)

@@ -18,7 +18,7 @@ from ai_image_frame.services import (
 )
 from ai_image_frame.services.common import get_absolute_asset_path
 
-SESSION_TOKEN = os.environ["DALLE2_SESSION_TOKEN"]
+API_KEY = os.environ["OPENAI_API_KEY"]
 RUN_MODE = os.environ["RUN_MODE"]
 LOG_DIR = Path(os.environ["LOG_DIR"])
 IMAGE_DIR = Path(os.environ["IMAGE_DIR"])
@@ -115,7 +115,7 @@ def handle_new_prompt() -> None:
         prompt = input("Please enter a prompt: ")
     play_obj = audio_service.play_sound("waiting", blocking=False)
     image_paths = image_generation_service.generate_images_for_prompt(
-        prompt, IMAGE_DIR, SESSION_TOKEN, demo_mode=DEMO_MODE
+        prompt, IMAGE_DIR, API_KEY, demo_mode=DEMO_MODE
     )
     logging_service.append_images_to_log(
         image_paths, [prompt] * len(image_paths), GENERATED_IMAGE_LOG_PATH

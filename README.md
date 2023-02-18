@@ -40,6 +40,8 @@ systemctl --user daemon-reload && systemctl --user restart ai_image_frame
 
 ### Mac
 
+- `brew install libjpeg`
+- `poetry env use 3.9.2`
 - run `poetry install`
 
 ### Assets
@@ -67,7 +69,7 @@ A `run_image_frame_loop` script is installed.
 
 ## TODO
 
-- Use Stable Diffusion instead of Dall-E
+- [x] ~~Use Stable Diffusion instead of Dall-E~~ -> using the official OpenAI API now
 - Implement state machine with possibility to go back to main state at any point
 - Refactor `run.py`, it's way too imperative
 - Allow button and voice choices simultaniously
